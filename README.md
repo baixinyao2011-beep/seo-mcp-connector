@@ -65,13 +65,21 @@ There is no default username or password. The first visit asks you to create a l
 npm run setup:gsc
 ```
 
-4. Run GA4 OAuth:
+4. If you need Search Console write operations such as sitemap submission or site management, reauthorize with the full Search Console scope:
+
+```bash
+npm run setup:gsc:write
+```
+
+Dashboard permissions alone are not enough for write operations. The Google account must also grant `https://www.googleapis.com/auth/webmasters`.
+
+5. Run GA4 OAuth:
 
 ```bash
 npm run setup:ga4
 ```
 
-5. Check connected accounts:
+6. Check connected accounts:
 
 ```bash
 npm run accounts:list
@@ -122,8 +130,8 @@ Enabled by default:
 Disabled by default:
 
 - Bing read
-- Site management
-- Sitemap submission
+- Site management, which also requires `npm run setup:gsc:write`
+- Sitemap submission, which also requires `npm run setup:gsc:write`
 - Google/Bing indexing submission
 - Bing URL submission
 - Delete and remove operations

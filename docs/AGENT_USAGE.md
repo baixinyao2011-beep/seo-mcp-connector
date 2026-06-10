@@ -19,6 +19,7 @@ seo-search-console
 - Use a GA4 property ID string such as `123456789` for GA4 tools.
 - Write, delete, sitemap submission, indexing submission, and Bing URL submission tools are disabled by default.
 - If a tool is missing or rejected, ask the user to enable the matching permission in the local dashboard.
+- For `sites_add` and `sitemaps_submit`, dashboard permission is not enough; the user must also reauthorize Google Search Console with `npm run setup:gsc:write`.
 
 ## Common Calls
 
@@ -140,6 +141,12 @@ These tools require explicit dashboard approval before use:
 - `bing_index_now`
 
 When a user asks for one of these actions, explain the risk and ask them to enable the relevant local permission.
+
+For `sites_add`, `sites_delete`, `sitemaps_submit`, and `sitemaps_delete`, also verify that the Google account was authorized with the full Search Console `webmasters` scope. If the call fails with an insufficient-permission error, ask the user to run:
+
+```bash
+npm run setup:gsc:write
+```
 
 ## Output Guidance
 

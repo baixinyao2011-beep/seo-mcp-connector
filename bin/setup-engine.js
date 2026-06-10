@@ -12,7 +12,9 @@ const CONFIG_FILE = process.env.SEO_MCP_CONFIG_FILE ? path.resolve(process.env.S
 const KEY_FILE = process.env.SEO_MCP_KEY_FILE ? path.resolve(process.env.SEO_MCP_KEY_FILE) : path.join(ROOT_DIR, ".seo-mcp-key");
 const DEFAULT_ENGINE_FILE = path.join(ROOT_DIR, "vendor", "search-console-mcp", "dist", "index.js");
 
-const args = process.argv.slice(2);
+const rawArgs = process.argv.slice(2);
+const forceSearchConsoleWrite = rawArgs.includes("--gsc-write");
+const args = rawArgs.filter((arg) => arg !== "--gsc-write");
 if (!args.length) {
   console.error("Usage: node bin/setup-engine.js setup --engine=google|ga4|bing");
   console.error("   or: node bin/setup-engine.js accounts list");
@@ -25,7 +27,8 @@ const child = spawn(process.execPath, [config.enginePath, ...args], {
   stdio: "inherit",
   env: {
     ...process.env,
-    ...buildEngineEnv(config)
+    ...buildEngineEnv(config),
+    ...(forceSearchConsoleWrite ? { SEO_MCP_GSC_WRITE_SCOPE: "1" } : {})
   }
 });
 

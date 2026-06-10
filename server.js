@@ -28,8 +28,8 @@ const PERMISSION_DEFINITIONS = [
   { key: "pageSpeed", label: "PageSpeed 与结构化数据", defaultEnabled: true, risk: "low" },
   { key: "crossPlatform", label: "GSC + GA4 交叉分析", defaultEnabled: true, risk: "low" },
   { key: "bingRead", label: "Bing 读取", defaultEnabled: false, risk: "medium" },
-  { key: "siteManagement", label: "添加站点", defaultEnabled: false, risk: "high" },
-  { key: "sitemapWrite", label: "提交 Sitemap", defaultEnabled: false, risk: "high" },
+  { key: "siteManagement", label: "添加站点（需 GSC 写入授权）", defaultEnabled: false, risk: "high" },
+  { key: "sitemapWrite", label: "提交 Sitemap（需 GSC 写入授权）", defaultEnabled: false, risk: "high" },
   { key: "indexingWrite", label: "Google/Bing 索引提交", defaultEnabled: false, risk: "high" },
   { key: "bingWrite", label: "Bing URL 提交", defaultEnabled: false, risk: "high" },
   { key: "destructive", label: "删除与移除操作", defaultEnabled: false, risk: "critical" }

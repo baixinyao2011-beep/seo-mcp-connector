@@ -10,6 +10,7 @@
   "scripts": {
     "prepare-engine": "node scripts/prepare-engine.js",
     "setup:gsc": "node bin/setup-engine.js setup --engine=google",
+    "setup:gsc:write": "node bin/setup-engine.js setup --engine=google --gsc-write",
     "setup:ga4": "node bin/setup-engine.js setup --engine=ga4",
     "setup:bing": "node bin/setup-engine.js setup --engine=bing",
     "accounts:list": "node bin/setup-engine.js accounts list",

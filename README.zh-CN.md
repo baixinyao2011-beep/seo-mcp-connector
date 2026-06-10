@@ -65,13 +65,21 @@ SEO MCP Connector is running at http://127.0.0.1:54321
 npm run setup:gsc
 ```
 
-4. 授权 GA4：
+4. 如果需要提交 sitemap、添加站点等 Search Console 写入操作，重新授权完整 Search Console scope：
+
+```bash
+npm run setup:gsc:write
+```
+
+只在管理页面开启权限还不够，Google 账号本身也必须授予 `https://www.googleapis.com/auth/webmasters`。
+
+5. 授权 GA4：
 
 ```bash
 npm run setup:ga4
 ```
 
-5. 查看已连接账号：
+6. 查看已连接账号：
 
 ```bash
 npm run accounts:list
@@ -122,8 +130,8 @@ Agent 应连接这个 wrapper，不要绕过它直连 `npx search-console-mcp`�
 默认关闭：
 
 - Bing 读取
-- 添加站点
-- 提交 sitemap
+- 添加站点，需要额外运行 `npm run setup:gsc:write`
+- 提交 sitemap，需要额外运行 `npm run setup:gsc:write`
 - Google/Bing 索引提交
 - Bing URL 提交
 - 删除与移除操作

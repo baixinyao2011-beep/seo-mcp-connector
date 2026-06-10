@@ -32,6 +32,7 @@ function patchSetupMenu() {
   let source = readFileSync(setupFile, "utf8");
   const hadGA4Flag = source.includes("engineFlag === 'ga4'");
   const hadGA4Menu = source.includes("console.log('2. Google Analytics 4')");
+  const hadSearchConsoleWritePatch = source.includes("SEO_MCP_GSC_WRITE_SCOPE");
 
   if (!hadGA4Flag) {
     source = source.replace(
@@ -64,6 +65,60 @@ function patchSetupMenu() {
   }
   if (!source.includes("engineFlag === 'ga4'") || !source.includes("console.log('2. Google Analytics 4')")) {
     throw new Error("Failed to patch the GA4 setup entry point.");
+  }
+
+  if (!hadSearchConsoleWritePatch) {
+    const originalScopeBlock = `    console.log(\`\\n\${colors.bold}💡 Google Indexing API Rules:\${colors.reset}\`);
+    console.log(\`   Officially, the Google Indexing API is only supported for pages containing\`);
+    console.log(\`   \${colors.cyan}JobPosting\${colors.reset} or \${colors.cyan}BroadcastEvent\${colors.reset} structured data. Using it for other content\`);
+    console.log(\`   types may result in submissions being ignored by Google.\`);
+    const authorizeIndexing = await ask('\\nWould you like to also authorize Google Indexing API write scope? (y/N): ');
+    const useIndexing = authorizeIndexing.toLowerCase().startsWith('y');
+    const scopes = useIndexing
+        ? [
+            'https://www.googleapis.com/auth/webmasters.readonly',
+            'https://www.googleapis.com/auth/indexing',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+        : [
+            'https://www.googleapis.com/auth/webmasters.readonly',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ];`;
+    const patchedScopeBlock = `    console.log(\`\\n\${colors.bold}💡 Google Search Console Write Scope:\${colors.reset}\`);
+    console.log(\`   Read-only access is enough for reports, but sitemap submit and site management\`);
+    console.log(\`   require the full \${colors.cyan}webmasters\${colors.reset} scope.\`);
+    const forceSearchConsoleWrite = process.env.SEO_MCP_GSC_WRITE_SCOPE === '1';
+    const authorizeSearchConsoleWrite = forceSearchConsoleWrite
+        ? 'y'
+        : await ask('\\nAuthorize full Search Console write scope for sitemap submit/site management? (y/N): ');
+    const useSearchConsoleWrite = forceSearchConsoleWrite || authorizeSearchConsoleWrite.toLowerCase().startsWith('y');
+    const searchConsoleScope = useSearchConsoleWrite
+        ? 'https://www.googleapis.com/auth/webmasters'
+        : 'https://www.googleapis.com/auth/webmasters.readonly';
+    console.log(\`\\n\${colors.bold}💡 Google Indexing API Rules:\${colors.reset}\`);
+    console.log(\`   Officially, the Google Indexing API is only supported for pages containing\`);
+    console.log(\`   \${colors.cyan}JobPosting\${colors.reset} or \${colors.cyan}BroadcastEvent\${colors.reset} structured data. Using it for other content\`);
+    console.log(\`   types may result in submissions being ignored by Google.\`);
+    const authorizeIndexing = await ask('\\nWould you like to also authorize Google Indexing API write scope? (y/N): ');
+    const useIndexing = authorizeIndexing.toLowerCase().startsWith('y');
+    const scopes = useIndexing
+        ? [
+            searchConsoleScope,
+            'https://www.googleapis.com/auth/indexing',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ]
+        : [
+            searchConsoleScope,
+            'https://www.googleapis.com/auth/userinfo.email'
+        ];`;
+    if (!source.includes(originalScopeBlock)) {
+      throw new Error("Failed to locate the Search Console OAuth scope block.");
+    }
+    source = source.replace(originalScopeBlock, patchedScopeBlock);
+  }
+
+  if (!source.includes("SEO_MCP_GSC_WRITE_SCOPE") || !source.includes("'https://www.googleapis.com/auth/webmasters'")) {
+    throw new Error("Failed to patch the Search Console write scope prompt.");
   }
 
   writeFileSync(setupFile, source);

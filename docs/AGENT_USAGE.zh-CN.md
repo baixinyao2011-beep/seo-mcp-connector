@@ -19,6 +19,7 @@ seo-search-console
 - GA4 查询使用 property ID，例如 `123456789`。
 - 写入、删除、提交 sitemap、索引提交、Bing URL 提交等工具默认关闭。
 - 如果工具不存在或调用被拒绝，提示用户在本地管理页面开启对应权限，不要尝试绕过 runner。
+- `sites_add` 和 `sitemaps_submit` 还需要 Google 账号重新授权完整 Search Console scope，用户应运行 `npm run setup:gsc:write`。
 
 ## 常用调用
 
@@ -140,6 +141,12 @@ seo-search-console
 - `bing_index_now`
 
 如果用户要求使用这些能力，先说明风险，再让用户在本地管理页面开启对应权限。
+
+对于 `sites_add`、`sites_delete`、`sitemaps_submit`、`sitemaps_delete`，只开启本地权限还不够，还要确认 Google 账号已经授权完整 Search Console `webmasters` scope。如果返回权限不足，让用户运行：
+
+```bash
+npm run setup:gsc:write
+```
 
 ## 输出建议
 
