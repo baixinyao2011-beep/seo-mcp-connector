@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SEO MCP Connector</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="auth-shell" id="authShell">
+      <form class="auth-panel" id="authForm" autocomplete="off">
+        <p class="eyebrow" id="authMode">本地登录</p>
+        <h1>SEO MCP Connector</h1>
+        <p id="authCopy">登录后管理 Google Search Console、GA4、Bing Key、权限开关和 MCP 配置。</p>
+        <label>
+          <span>用户名</span>
+          <input id="usernameInput" type="text" autocomplete="username" required />
+        </label>
+        <label>
+          <span>密码</span>
+          <input id="passwordInput" type="password" autocomplete="current-password" required />
+        </label>
+        <button class="primary-button" type="submit" id="authSubmit">登录</button>
+      </form>
+    </div>
+
+    <div class="app-shell hidden" id="appShell">
+      <aside class="sidebar">
+        <header>
+          <p class="eyebrow">本机 SEO 数据</p>
+          <h1>SEO MCP Connector</h1>
+        </header>
+
+        <nav class="nav-list" aria-label="管理区">
+          <a href="#overview" class="nav-item active">概览</a>
+          <a href="#keys" class="nav-item">密钥</a>
+          <a href="#permissions" class="nav-item">权限</a>
+          <a href="#agent" class="nav-item">Agent</a>
+        </nav>
+
+        <section class="sidebar-box">
+          <p class="eyebrow">运行状态</p>
+          <div class="status-row"><span class="dot ok"></span><span id="googleStatus">Google 待检测</span></div>
+          <div class="status-row"><span class="dot idle"></span><span id="ga4Status">GA4 待检测</span></div>
+          <div class="status-row"><span class="dot idle"></span><span id="bingStatus">Bing 未配置</span></div>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow">本地管理页面</p>
+            <h2>Search Console + GA4 MCP 管理</h2>
+          </div>
+          <div class="topbar-actions">
+            <button class="ghost-button" id="refreshButton" type="button">刷新</button>
+            <button class="ghost-button" id="testButton" type="button">测试 MCP</button>
+            <button class="primary-button" id="saveButton" type="button">保存配置</button>
+            <button class="ghost-button" id="logoutButton" type="button">退出</button>
+          </div>
+        </section>
+
+        <section class="notice" id="notice">
+          <span class="dot idle"></span>
+          <span>MCP 客户端只连接本地 runner；Google token 仍由底层连接器保存在本机钥匙串中。</span>
+        </section>
+
+        <section class="layout-grid">
+          <div class="main-column">
+            <section class="panel" id="overview">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Accounts</p>
+                  <h3>已连接账号</h3>
+                </div>
+                <span id="updatedAt">等待加载</span>
+              </div>
+              <div class="account-list" id="accountList"></div>
+            </section>
+
+            <section class="panel" id="keys">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Keys</p>
+                  <h3>接口 Key 与 OAuth Client</h3>
+                </div>
+              </div>
+
+              <div class="form-grid two">
+                <label>
+                  <span>Google OAuth Client ID</span>
+                  <input id="googleClientIdInput" type="text" placeholder="已自动导入可留空" autocomplete="off" />
+                  <small id="googleClientIdMask">未配置</small>
+                </label>
+                <label>
+                  <span>Google OAuth Client Secret</span>
+                  <div class="secret-field">
+                    <input id="googleClientSecretInput" type="password" placeholder="只在更换时填写" autocomplete="new-password" />
+                    <button class="icon-button reveal-button" type="button" data-target="googleClientSecretInput" title="显示或隐藏密钥">◐</button>
+                  </div>
+                  <small id="googleClientSecretMask">未配置</small>
+                </label>
+              </div>
+
+              <div class="form-grid two">
+                <label>
+                  <span>Bing Webmaster Tools API Key</span>
+                  <div class="secret-field">
+                    <input id="bingApiKeyInput" type="password" placeholder="可选，只在新增或更换时填写" autocomplete="new-password" />
+                    <button class="icon-button reveal-button" type="button" data-target="bingApiKeyInput" title="显示或隐藏密钥">◐</button>
+                  </div>
+                  <small id="bingApiKeyMask">未配置</small>
+                </label>
+                <label>
+                  <span>Service Account JSON 路径</span>
+                  <input id="googleApplicationCredentialsInput" type="text" placeholder="组织禁用 key 时可留空" autocomplete="off" />
+                  <small id="googleApplicationCredentialsMask">未配置</small>
+                </label>
+              </div>
+            </section>
+
+            <section class="panel" id="permissions">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Policy</p>
+                  <h3>权限开关</h3>
+                </div>
+              </div>
+              <div class="permission-grid" id="permissionGrid"></div>
+
+              <label class="full-label">
+                <span>站点与属性 Allowlist</span>
+                <textarea id="allowlistInput" rows="5" placeholder="每行一个：sc-domain:example.com、example.com、123456789。留空表示不额外限制。"></textarea>
+              </label>
+            </section>
+          </div>
+
+          <aside class="side-column">
+            <section class="panel">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">MCP Config</p>
+                  <h3>客户端配置</h3>
+                </div>
+                <button class="icon-button" id="copyConfigButton" type="button" title="复制配置">⧉</button>
+              </div>
+              <pre id="configPreview">{}</pre>
+            </section>
+
+            <section class="panel" id="agent">
+              <div class="panel-header">
+                <div>
+                  <p class="eyebrow">Agent</p>
+                  <h3>调用说明</h3>
+                </div>
+              </div>
+              <ul class="agent-list">
+                <li>先调用 `get_started` 查看可用平台和建议流程。</li>
+                <li>查 GSC 站点用 `sites_list`，查表现用 `analytics_query`。</li>
+                <li>查 GA4 用 `analytics_page_performance`、`analytics_realtime` 等工具。</li>
+                <li>写入类工具默认关闭，必须在本页开启权限。</li>
+              </ul>
+              <a class="doc-link" href="/docs/AGENT_USAGE.zh-CN.md" target="_blank">打开完整 Agent 调用说明</a>
+            </section>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

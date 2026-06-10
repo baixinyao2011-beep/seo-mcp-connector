@@ -1,0 +1,23 @@
+{
+  "name": "seo-mcp-connector",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local management console and permission wrapper for Search Console MCP, GA4, Bing, and SEO agent tools.",
+  "type": "module",
+  "bin": {
+    "seo-mcp": "bin/run-seo-mcp.js"
+  },
+  "scripts": {
+    "prepare-engine": "node scripts/prepare-engine.js",
+    "setup:gsc": "node bin/setup-engine.js setup --engine=google",
+    "setup:ga4": "node bin/setup-engine.js setup --engine=ga4",
+    "setup:bing": "node bin/setup-engine.js setup --engine=bing",
+    "accounts:list": "node bin/setup-engine.js accounts list",
+    "start": "node server.js",
+    "dev": "node server.js",
+    "check": "node --check server.js && node --check bin/run-seo-mcp.js && node --check bin/setup-engine.js && node --check scripts/prepare-engine.js && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

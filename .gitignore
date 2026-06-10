@@ -1,0 +1,11 @@
+node_modules/
+vendor/
+data/*.json
+.seo-mcp-key
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+coverage/
+dist/
